@@ -1,0 +1,3 @@
+dist_bin_SCRIPTS += plugins/casm-utilities-super/_casmutils-super
+
+EXTRA_DIST += _casmutils-super.in
