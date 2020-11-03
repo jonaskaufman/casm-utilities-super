@@ -4,16 +4,30 @@ import argparse
 import numpy as np
 import casmutils as cu
 
-print("Hellooooo")
+def read_3x3_matrix(matrix_path):
+    matrix = np.loadtxt(matrix_path)
+    m,n = np.shape(matrix)
+    if not ((m == 3) and (n == 3)):
+        raise RuntimeError("Transformation matrix must be 3 by 3.")
+    return matrix
 
-"""
-transformation_matrix_path = "./transf_mat"
-input_structure_path = "./POSCAR"
-output_structure_path = "./POSCAR.out"
 
-transformation_matrix = np.loadtxt(transformation_matrix_path)
-# TODO: check matrix dimensions
-input_structure = cu.xtal.Structure.from_poscar(input_structure_path)
-super_structure = cu.xtal.make_superstructure(input_structure, transformation_matrix)
-super_structure.to_poscar(output_structure_path)
-"""
+def main():
+    parser = argparse.ArgumentParser(description="Make a superstructure given a structure and a transformation matrix.")
+    parser.add_argument("-s", "--structure", dest="input_structure_path", help="POS.vasp like file to use as input structure", required=True)
+    parser.add_argument("-m", "--matrix", dest="transformation_matrix_path", help="File containing 3x3 transformation_matrix of supercell", required=True)
+    parser.add_argument("-o", "--output", dest="output_structure_path", help="Target output file")
+    args = parser.parse_args()
+
+    transformation_matrix = read_3x3_matrix(args.transformation_matrix_path)
+    input_structure = cu.xtal.Structure.from_poscar(args.input_structure_path)
+    super_structure = cu.xtal.make_superstructure(input_structure, transformation_matrix)
+
+    if args.output_structure_path:
+        super_structure.to_poscar(args.output_structure_path)
+    else:
+        print(super_structure)
+
+
+if __name__ == "__main__":
+    main()
